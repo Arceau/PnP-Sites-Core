@@ -986,7 +986,9 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         private static bool IsMatchingTheme(ThemeEntity theme, string masterPageUrl, string themeUrl, string fontUrl)
         {
-            bool themeUrlHasValue = false, fontUrlHasValue = false;
+            var themeUrlHasValue = false;
+            var fontUrlHasValue = false;
+            var masterPageUrlHasValue = false;
 
             // Is theme URL meaningful for compare?
             if (!string.IsNullOrEmpty(theme.Theme))
@@ -1000,8 +1002,14 @@ namespace Microsoft.SharePoint.Client
                 fontUrlHasValue = true;
             }
 
+            // Is master page URL meaningful for compare?
+            if (!string.IsNullOrEmpty(theme.MasterPage))
+            {
+                masterPageUrlHasValue = true;
+            }
+
             // Should we compare all of the values?
-            if (themeUrlHasValue && fontUrlHasValue)
+            if (themeUrlHasValue && fontUrlHasValue && masterPageUrlHasValue)
             {
                 if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase) &&
@@ -1012,7 +1020,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Should we compare only master page and theme URL?
-            if (themeUrlHasValue && !fontUrlHasValue)
+            if (themeUrlHasValue && !fontUrlHasValue && masterPageUrlHasValue)
             {
                 if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase))
@@ -1022,7 +1030,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Should we compare only master page and font value?
-            if (!themeUrlHasValue && fontUrlHasValue)
+            if (!themeUrlHasValue && fontUrlHasValue && masterPageUrlHasValue)
             {
                 if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
@@ -1032,7 +1040,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Should we only compare master page
-            if (!themeUrlHasValue && !fontUrlHasValue)
+            if (!themeUrlHasValue && !fontUrlHasValue && masterPageUrlHasValue)
             {
                 if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
