@@ -135,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // TH061115: Just because a site is using a OOTB composed look doesnt mean the site logo shouldnt be copied across
                 // check to see if there is a file connector and then download the file if there is.
-                if (string.IsNullOrEmpty(template.ComposedLook.SiteLogo) && creationInfo != null)
+                if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo) && creationInfo != null)
                 {
                     if (creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null && !template.ComposedLook.SiteLogo.ToLower().Contains("_layouts"))
                     {
@@ -236,7 +236,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // TH221115 - Similar issue as with ObjectHandlerBase (PR127) where the Uri is encoded so any spaces
             // have the %20 which means comparison fails, lots of my clients use spaces in the Url so definitely
             // be great to patch this as well.
-            var webUrlPathAndQuery = HttpUtility.UrlDecode(u.PathAndQuery);
+            var webUrlPathAndQuery = HttpUtility.UrlDecode(u.AbsolutePath);
             if (f.Folder.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
             {
                 f.Folder = f.Folder.Replace(webUrlPathAndQuery, "");
