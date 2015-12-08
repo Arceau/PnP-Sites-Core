@@ -972,6 +972,12 @@ namespace Microsoft.SharePoint.Client
                 theme.MasterPage = theme.MasterPage.Replace(siteCollectionUrl, "");
             }
 
+            if (theme.Name == null)
+            {
+                return null;
+            }
+
+
             return theme;
         }
 
