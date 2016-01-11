@@ -953,7 +953,13 @@ namespace Microsoft.SharePoint.Client
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
             if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
-                && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
+                && string.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
+            {
+                return null;
+            }
+
+            // TH091215: If the theme name is null then it will invalidate the schema therefore return null
+            if (string.IsNullOrEmpty(theme.Name))
             {
                 return null;
             }

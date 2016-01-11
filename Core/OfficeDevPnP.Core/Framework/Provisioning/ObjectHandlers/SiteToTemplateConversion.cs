@@ -79,7 +79,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectPublishing());
                 objectHandlers.Add(new ObjectWorkflows());
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
-
+                objectHandlers.Add(new ObjectSiteSecurityDynamic());
                 int step = 1;
 
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(web, template, creationInfo));
@@ -158,6 +158,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectPropertyBagEntry());
                 objectHandlers.Add(new ObjectExtensibilityProviders());
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
+                objectHandlers.Add(new ObjectSiteSecurityDynamic());
 
                 var tokenParser = new TokenParser(web, template);
 
