@@ -52,95 +52,119 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 try
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
-                                    var listitemCI = new ListItemCreationInformation();
-                                    var listitem = list.AddItem(listitemCI);
-
-                                    foreach (var dataValue in dataRow.Values)
+                                    if (dataRow.Values.Count > 0)
                                     {
-                                        Field dataField = fields.FirstOrDefault(
-                                            f => f.InternalName == parser.ParseString(dataValue.Key));
-
-                                        if (dataField != null)
+                                        var folder = dataRow.Values.Where(w => w.Key == "FileLeafRef");
+                                        if (folder.Count() > 0)
                                         {
-                                            String fieldValue = parser.ParseString(dataValue.Value);
+                                            var folderName = folder.FirstOrDefault().Value;
+                                            var folders = list.RootFolder.Folders;
+                                            web.Context.Load(folders);
+                                            web.Context.ExecuteQueryRetry();
 
-                                            switch (dataField.FieldTypeKind)
+                                            if (folders.Where(w => w.Name == folderName).Count() == 0)
                                             {
-                                                case FieldType.Geolocation:
-                                                    // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
-                                                    var geolocationArray = fieldValue.Split(',');
-                                                    if (geolocationArray.Length == 4)
-                                                    {
-                                                        var geolocationValue = new FieldGeolocationValue
-                                                        {
-                                                            Altitude = Double.Parse(geolocationArray[0]),
-                                                            Latitude = Double.Parse(geolocationArray[1]),
-                                                            Longitude = Double.Parse(geolocationArray[2]),
-                                                            Measure = Double.Parse(geolocationArray[3]),
-                                                        };
-                                                        listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
-                                                    }
-                                                    else
-                                                    {
-                                                        listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                    }
-                                                    break;
-                                                case FieldType.Lookup:
-                                                    // FieldLookupValue - Expected format: LookupID
-                                                    var lookupValue = new FieldLookupValue
-                                                    {
-                                                        LookupId = Int32.Parse(fieldValue),
-                                                    };
-                                                    listitem[parser.ParseString(dataValue.Key)] = lookupValue;
-                                                    break;
-                                                case FieldType.URL:
-                                                    // FieldUrlValue - Expected format: URL,Description
-                                                    var urlArray = fieldValue.Split(',');
-                                                    var linkValue = new FieldUrlValue();
-                                                    if (urlArray.Length == 2)
-                                                    {
-                                                        linkValue.Url = urlArray[0];
-                                                        linkValue.Description = urlArray[1];
-                                                    }
-                                                    else
-                                                    {
-                                                        linkValue.Url = urlArray[0];
-                                                        linkValue.Description = urlArray[0];
-                                                    }
-                                                    listitem[parser.ParseString(dataValue.Key)] = linkValue;
-                                                    break;
-                                                case FieldType.User:
-                                                    // FieldUserValue - Expected format: loginName
-                                                    var user = web.EnsureUser(fieldValue);
-                                                    web.Context.Load(user);
-                                                    web.Context.ExecuteQueryRetry();
-
-                                                    if (user != null)
-                                                    {
-                                                        var userValue = new FieldUserValue
-                                                        {
-                                                            LookupId = user.Id,
-                                                        };
-                                                        listitem[parser.ParseString(dataValue.Key)] = userValue;
-                                                    }
-                                                    else
-                                                    {
-                                                        listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                    }
-                                                    break;
-                                                default:
-                                                    listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                    break;
+                                                var newFolder = folders.Add(folderName);
+                                                folders.Context.Load(newFolder);
+                                                folders.Context.ExecuteQueryRetry();
                                             }
                                         }
-                                        listitem.Update();
+                                        else
+                                        {
+                                            var listitemCI = new ListItemCreationInformation();
+                                            var listitem = list.AddItem(listitemCI);
+
+                                            foreach (var dataValue in dataRow.Values)
+                                            {
+                                                Field dataField = fields.FirstOrDefault(
+                                                    f => f.InternalName == parser.ParseString(dataValue.Key));
+
+                                                if (dataField != null)
+                                                {
+                                                    String fieldValue = parser.ParseString(dataValue.Value);
+
+                                                    switch (dataField.FieldTypeKind)
+                                                    {
+                                                        case FieldType.Geolocation:
+                                                            // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
+                                                            var geolocationArray = fieldValue.Split(',');
+                                                            if (geolocationArray.Length == 4)
+                                                            {
+                                                                var geolocationValue = new FieldGeolocationValue
+                                                                {
+                                                                    Altitude = Double.Parse(geolocationArray[0]),
+                                                                    Latitude = Double.Parse(geolocationArray[1]),
+                                                                    Longitude = Double.Parse(geolocationArray[2]),
+                                                                    Measure = Double.Parse(geolocationArray[3]),
+                                                                };
+                                                                listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
+                                                            }
+                                                            else
+                                                            {
+                                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                            }
+                                                            break;
+                                                        case FieldType.Lookup:
+                                                            // FieldLookupValue - Expected format: LookupID
+                                                            var lookupValue = new FieldLookupValue
+                                                            {
+                                                                LookupId = Int32.Parse(fieldValue),
+                                                            };
+                                                            listitem[parser.ParseString(dataValue.Key)] = lookupValue;
+                                                            break;
+                                                        case FieldType.URL:
+                                                            // FieldUrlValue - Expected format: URL,Description
+                                                            var urlArray = fieldValue.Split(',');
+                                                            var linkValue = new FieldUrlValue();
+                                                            if (urlArray.Length == 2)
+                                                            {
+                                                                linkValue.Url = urlArray[0];
+                                                                linkValue.Description = urlArray[1];
+                                                            }
+                                                            else
+                                                            {
+                                                                linkValue.Url = urlArray[0];
+                                                                linkValue.Description = urlArray[0];
+                                                            }
+                                                            listitem[parser.ParseString(dataValue.Key)] = linkValue;
+                                                            break;
+                                                        case FieldType.User:
+                                                            // FieldUserValue - Expected format: loginName
+                                                            var user = web.EnsureUser(fieldValue);
+                                                            web.Context.Load(user);
+                                                            web.Context.ExecuteQueryRetry();
+
+                                                            if (user != null)
+                                                            {
+                                                                var userValue = new FieldUserValue
+                                                                {
+                                                                    LookupId = user.Id,
+                                                                };
+                                                                listitem[parser.ParseString(dataValue.Key)] = userValue;
+                                                            }
+                                                            else
+                                                            {
+                                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                            }
+                                                            break;
+                                                        default:
+                                                            listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                            break;
+                                                    }
+                                                }
+                                                listitem.Update();
+                                            }
+                                            web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
+
+                                            if (dataRow.Security != null && dataRow.Security.RoleAssignments.Count != 0)
+                                            {
+                                                listitem.SetSecurity(parser, dataRow.Security);
+                                            }
+                                        }
+                                      
                                     }
-                                    web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
-                                    
-                                    if (dataRow.Security != null && dataRow.Security.RoleAssignments.Count != 0)
-                                    {
-                                        listitem.SetSecurity(parser, dataRow.Security);
-                                    }
+
+                                  
                                 }
                                 catch (Exception ex)
                                 {

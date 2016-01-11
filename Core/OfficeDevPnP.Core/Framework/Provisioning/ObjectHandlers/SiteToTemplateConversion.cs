@@ -87,8 +87,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.DynamicSiteSecurity)) objectHandlers.Add(new ObjectSiteSecurityDynamic());
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
-                objectHandlers.Add(new ObjectSiteSecurityDynamic());
+
                 int step = 1;
 
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(web, template, creationInfo));
@@ -174,8 +175,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityProviders());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.DynamicSiteSecurity)) objectHandlers.Add(new ObjectSiteSecurityDynamic());
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
-                objectHandlers.Add(new ObjectSiteSecurityDynamic());
 
                 var tokenParser = new TokenParser(web, template);
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
